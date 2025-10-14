@@ -67,7 +67,7 @@ public class SharkMachine {
         SDR = memory[SAR];
     }
 
-    public void microstep() {
+    public void microStep() {
         if (halted) {
             return;
         }
