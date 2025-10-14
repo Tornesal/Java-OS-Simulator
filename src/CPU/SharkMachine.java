@@ -67,26 +67,6 @@ public class SharkMachine {
         SDR = memory[SAR];
     }
 
-    // Fetches the operand and opcode
-    private void fetch() {
-
-        // Fetch address of next instruction
-        SAR = PSIAR;
-
-        // read instruction and load it into memory
-        READ();
-
-        // Store in instruction register
-        IR = SDR;
-
-        // Get opcode (Upper 16 bits)
-        CSIAR = (IR >>> 16) & 0xFFFF;
-
-        // Get operand (Lower 16 bits)
-        SDR = IR & 0xFFFF;
-
-    }
-
     public void microstep() {
         if (halted) {
             return;
