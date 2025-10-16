@@ -74,7 +74,7 @@ public class SharkMachine {
 
         switch (CSIAR) {
 
-            // CSIAR stuff
+            // Fetch and decode the next instruction
             case 0:
                 SAR = PSIAR;
                 CSIAR = 1;
@@ -103,7 +103,108 @@ public class SharkMachine {
                 break;
 
 
-            // LDA
+            // ADD (Opcode 10)
+            case 10:
+                TMPR = ACC;
+                CSIAR = 11;
+                break;
+
+            case 11:
+                ACC = PSIAR + 1;
+                CSIAR = 12;
+                break;
+
+            case 12:
+                PSIAR = ACC;
+                CSIAR = 13;
+                break;
+
+            case 13:
+                ACC = TMPR;
+                CSIAR = 14;
+                break;
+
+            case 14:
+                TMPR = SDR;
+                CSIAR = 15;
+                break;
+
+            case 15:
+                SAR = TMPR;
+                CSIAR = 16;
+                break;
+
+            case 16:
+                READ();
+                CSIAR = 17;
+                break;
+
+            case 17:
+                TMPR = SDR;
+                CSIAR = 18;
+                break;
+
+            case 18:
+                ACC = ACC + TMPR;
+                CSIAR = 19;
+                break;
+
+            case 19:
+                CSIAR = 0;
+
+
+            // SUB (Opcode 20)
+            case 20:
+                TMPR = ACC;
+                CSIAR = 21;
+                break;
+
+            case 21:
+                ACC = PSIAR + 1;
+                CSIAR = 22;
+                break;
+
+            case 22:
+                PSIAR = ACC;
+                CSIAR = 23;
+                break;
+
+            case 23:
+                ACC = TMPR;
+                CSIAR = 24;
+                break;
+
+            case 24:
+                TMPR = SDR;
+                CSIAR = 25;
+                break;
+
+            case 25:
+                SAR = TMPR;
+                CSIAR = 26;
+                break;
+
+            case 26:
+                READ();
+                CSIAR = 27;
+                break;
+
+            case 27:
+                TMPR = SDR;
+                CSIAR = 28;
+                break;
+
+            case 28:
+                ACC = ACC - TMPR;
+                CSIAR = 29;
+                break;
+
+            case 29:
+                CSIAR = 0;
+                break;
+
+
+            // LOAD (LDA, Opcode 30)
             case 30:
                 ACC = PSIAR + 1;
                 CSIAR = 31;
@@ -140,7 +241,7 @@ public class SharkMachine {
                 break;
 
 
-            // STR
+            // STORE (Name STR, Opcode 40)
             case 40:
                 TMPR = ACC;
                 CSIAR = 41;
@@ -182,6 +283,63 @@ public class SharkMachine {
                 break;
 
             case 48:
+                CSIAR = 0;
+                break;
+
+
+            // BRANCH (Name BRH, Opcode 50)
+            case 50:
+                PSIAR = SDR;
+                CSIAR = 51;
+                break;
+
+            case 51:
+                CSIAR = 0;
+                break;
+
+
+            // COND BRANCH (Name CBR, Opcode 60)
+            case 60:
+                if (ACC == 0) {
+                    CSIAR += 2;
+                } else {
+                    CSIAR += 1;
+                }
+                break;
+
+            case 61:
+                CSIAR = 64;
+                break;
+
+            case 62:
+                PSIAR = SDR;
+                break;
+
+            case 63:
+                CSIAR = 0;
+                break;
+
+            case 64:
+                TMPR = ACC;
+                CSIAR = 65;
+                break;
+
+            case 65:
+                ACC = PSIAR + 1;
+                CSIAR = 66;
+                break;
+
+            case 66:
+                PSIAR = ACC;
+                CSIAR = 67;
+                break;
+
+            case 67:
+                ACC = TMPR;
+                CSIAR = 68;
+                break;
+
+            case 68:
                 CSIAR = 0;
                 break;
 
