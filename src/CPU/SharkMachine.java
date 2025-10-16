@@ -12,6 +12,7 @@ public class SharkMachine {
     private int SDR;
     private int TMPR;
     private int IR;
+    private int MIR;
     private int CSIAR;
 
     private boolean halted = false;
@@ -71,6 +72,8 @@ public class SharkMachine {
         if (halted) {
             return;
         }
+
+        MIR = CSIAR;
 
         switch (CSIAR) {
 
@@ -360,6 +363,7 @@ public class SharkMachine {
         System.out.println("SDR: " + SDR);
         System.out.println("TMPR: " + TMPR);
         System.out.println("IR: " + IR);
+        System.out.println("MIR: " + MIR);
         System.out.println("CSIAR: " + CSIAR); 
         System.out.println("halted: " + halted);
         System.out.println("End of Job");
