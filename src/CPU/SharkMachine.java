@@ -17,6 +17,8 @@ public class SharkMachine {
 
     private boolean halted = false;
 
+    private InterruptHandler interruptHandler;
+
     // Need these to make sure we do not condense the CSIAR < decoded IR (OP CODE) and SDR < decoded IR (Operand) into one case.
     // aka it allows us to keep accuracy with the CPU architecture.
     private int nextOpcode;
@@ -26,37 +28,33 @@ public class SharkMachine {
     public int[] getMemory() {
         return memory;
     }
-
     public int getACC() {
         return ACC;
     }
-
     public int getPSIAR() {
         return PSIAR;
     }
-
     public int getSAR() {
         return SAR;
     }
-
     public int getSDR() {
         return SDR;
     }
-
     public int getTMPR() {
         return TMPR;
     }
-
     public int getIR() {
         return IR;
     }
-
     public int getCSIAR() {
         return CSIAR;
     }
-
     public boolean isHalted() {
         return halted;
+    }
+
+    public void setInterruptHandler(InterruptHandler handler) {
+        interruptHandler = handler;
     }
 
     // Read and Write functions
@@ -154,6 +152,7 @@ public class SharkMachine {
 
             case 19:
                 CSIAR = 0;
+                break;
 
 
             // SUB (Opcode 20)

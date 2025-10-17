@@ -2,6 +2,9 @@ package CPU;
 
 public enum InterruptType {
 
-    TIMER, YIELD, HALT, FAULT
+    TIMER,
+    YIELD,
+    HALT,
+    FAULT
 
 }
