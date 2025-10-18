@@ -46,11 +46,45 @@ public class SharkMachine {
     public int getIR() {
         return IR;
     }
+    public int getMIR() {
+        return MIR;
+    }
     public int getCSIAR() {
         return CSIAR;
     }
     public boolean isHalted() {
         return halted;
+    }
+
+    public void setMemory(int[] memory) {
+        this.memory = memory;
+    }
+    public void setACC(int ACC) {
+        this.ACC = ACC;
+    }
+    public void setPSIAR(int PSIAR) {
+        this.PSIAR = PSIAR;
+    }
+    public void setSAR(int SAR) {
+        this.SAR = SAR;
+    }
+    public void setSDR(int SDR) {
+        this.SDR = SDR;
+    }
+    public void setTMPR(int TMPR) {
+        this.TMPR = TMPR;
+    }
+    public void setIR(int IR) {
+        this.IR = IR;
+    }
+    public void setMIR(int MIR) {
+        this.MIR = MIR;
+    }
+    public void setCSIAR(int CSIAR) {
+        this.CSIAR = CSIAR;
+    }
+    public void setHalted(boolean halted) {
+        this.halted = halted;
     }
 
     public void setInterruptHandler(InterruptHandler handler) {
