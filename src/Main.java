@@ -1,28 +1,34 @@
 import CPU.SharkMachine;
+import OS.SharkOS;
+import OS.PCB;
+import OS.ProcessState;
 
-void main() {
+public class Main {
+    public static void main(String[] args) {
+        SharkMachine cpu = new SharkMachine();
+        SharkOS os = new SharkOS();
+        cpu.setInterruptHandler(os::handleInterrupt);
 
-    SharkMachine cpu = new SharkMachine();
+        // --- seed a tiny program: LDA 100; STR 101; HALT ---
+        int[] mem = cpu.getMemory();
+        mem[0] = (30 << 16) | 100;  // LDA 100
+        mem[1] = (40 << 16) | 101;  // STR 101
+        mem[2] = (99 << 16) | 0;    // HALT
+        mem[100] = 42;              // data
 
-    // --- Seed a tiny program: LDA 100; STR 101; HALT ---
-    // encode(op, operand) = (op << 16) | operand
-    int[] mem = cpu.getMemory();
-    mem[0] = (30 << 16) | 100;  // LDA 100
-    mem[1] = (40 << 16) | 101;  // STR 101
-    mem[2] = (99 << 16) | 0;    // HALT
-    mem[100] = 42;              // data to load
+        // --- create a PCB and set its starting state ---
+        PCB pcb = new PCB(1);
+        pcb.state = ProcessState.READY;
+        pcb.PSIAR = 0; // start at address 0
 
-    // --- Start state: fetch begins at 0 ---
-    // PSIAR defaults to 0 in your class; ensure CSIAR = 0 to start microcode fetch (00).
-    // If you have a setter, use it; otherwise rely on default.
+        // --- hand control to OS (no queue yet; single job) ---
+        os.start(cpu, pcb);
 
-    // --- Run micro-steps until HALT ---
-    while (!cpu.isHalted()) {
-        cpu.microStep();
+        // --- run until OS says no more work ---
+        while (os.hasWork()) {
+            cpu.microStep();
+        }
+
+        System.out.println("Done.");
     }
-
-    // --- Quick verification ---
-    System.out.println("After HALT:");
-    System.out.println("ACC should be 42 -> " + cpu.getACC());
-    System.out.println("mem[101] should be 42 -> " + cpu.getMemory()[101]);
 }

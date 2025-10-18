@@ -1,5 +1,7 @@
 package CPU;
 
+import OS.*;
+
 public class SharkMachine {
 
     // Array to hold memory
@@ -89,6 +91,13 @@ public class SharkMachine {
 
     public void setInterruptHandler(InterruptHandler handler) {
         interruptHandler = handler;
+    }
+
+    // Raises an interrupt for the OS to handle.
+    private void raiseInterrupt(InterruptType type) {
+        if (interruptHandler != null && !halted) {
+            interruptHandler.handleInterrupt(type, this);
+        }
     }
 
     // Read and Write functions
@@ -380,8 +389,16 @@ public class SharkMachine {
                 break;
 
 
-            // HALT CPU
+            // YIELD (Name YLD, Opcode 98)
+            case 98:
+                raiseInterrupt(InterruptType.YIELD);
+                break;
+
+
+            // HALT (Name HLT, Opcode 99)
             case 99:
+                // Notifies the OS that the CPU has halted
+                raiseInterrupt(InterruptType.HALT);
                 dumpState();
                 halted = true;
                 break;

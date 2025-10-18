@@ -8,6 +8,6 @@ public enum ProcessState {
     READY,
     RUNNING,
     WAITING,
-    DONE
+    TERMINATED
 
 }
