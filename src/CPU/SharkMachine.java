@@ -403,8 +403,8 @@ public class SharkMachine {
             case 99:
                 // Notifies the OS that the CPU has halted
                 raiseInterrupt(InterruptType.HALT);
-                dumpState();
                 halted = true;
+                dumpState();
                 break;
 
         }
