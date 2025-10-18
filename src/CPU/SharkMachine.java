@@ -19,6 +19,10 @@ public class SharkMachine {
 
     private boolean halted = false;
 
+    // timer for timer interrupts
+    private int timer = 0;
+    private final int QUANTUM = 100;
+
     private InterruptHandler interruptHandler;
 
     // Need these to make sure we do not condense the CSIAR < decoded IR (OP CODE) and SDR < decoded IR (Operand) into one case.
@@ -404,6 +408,15 @@ public class SharkMachine {
                 break;
 
         }
+
+        // Advance timer by one tick for timer interrupt.
+        timer++;
+
+        if (timer >= QUANTUM) {
+            timer = 0;
+            raiseInterrupt(InterruptType.TIMER);
+        }
+
     }
     
     private void dumpState() {
