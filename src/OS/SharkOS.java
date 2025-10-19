@@ -68,6 +68,7 @@ public class SharkOS implements InterruptHandler {
             // Pull the first job off the queue
             PCB next = readyQueue.pollFirst();
 
+            // Stop after the job is not terminated and after running a single job
             if (next.state != ProcessState.TERMINATED) {
 
                 running = next;
