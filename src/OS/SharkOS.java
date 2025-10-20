@@ -1,6 +1,9 @@
 package OS;
 
 import CPU.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class SharkOS implements InterruptHandler {
 
@@ -98,10 +101,9 @@ public class SharkOS implements InterruptHandler {
 
             case HALT:
 
-            case FAULT:
                 if (program != null) {
                     program.state = ProcessState.TERMINATED;
-                    program = null;
+                    dumpJobStateToFile(cpu, program);
                 }
                 runNextJob();
                 break;
@@ -113,6 +115,47 @@ public class SharkOS implements InterruptHandler {
     // Check if there is work to be done
     public boolean hasWork() {
         return program != null || !readyQueue.isEmpty();
+    }
+
+    private void dumpJobStateToFile(SharkMachine cpu, PCB job) {
+        if (job == null) return;
+
+        String logFileName = "logs/job_" + job.pid + "_dump.log";
+
+        // Create the logs directory if it doesn't exist
+        java.io.File logDir = new java.io.File("logs");
+        if (!logDir.exists()) {
+            logDir.mkdirs();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFileName))) {
+            writer.write("----- DUMP STATE on HALT for Job PID: " + job.pid + " -----\n");
+            writer.write("ACC: " + cpu.getACC() + "\n");
+            writer.write("PSIAR: " + cpu.getPSIAR() + "\n");
+            writer.write("SAR: " + cpu.getSAR() + "\n");
+            writer.write("SDR: " + cpu.getSDR() + "\n");
+            writer.write("TMPR: " + cpu.getTMPR() + "\n");
+            writer.write("IR: " + cpu.getIR() + "\n");
+            writer.write("MIR: " + cpu.getMIR() + "\n");
+            writer.write("CSIAR: " + cpu.getCSIAR() + "\n");
+
+            writer.write("----- Used Memory Contents -----\n");
+            int[] memory = cpu.getMemory();
+            for (int i = 0; i < memory.length; i++) {
+                // To keep it readable but complete, let's print 8 addresses per line.
+                if (i % 8 == 0) {
+                    writer.write(String.format("%nmem[%04d]: ", i));
+                }
+                writer.write(String.format(" %11d", memory[i]));
+            }
+
+            writer.write("----- End of Job -----\n");
+            writer.write("---------------------------------------\n");
+
+        } catch (IOException e) {
+            System.err.println("Error writing log file for Job " + job.pid);
+            e.printStackTrace();
+        }
     }
 
 }

@@ -66,9 +66,6 @@ public class SharkMachine {
         return nextOperand;
     }
 
-    public void setMemory(int[] memory) {
-        this.memory = memory;
-    }
     public void setACC(int ACC) {
         this.ACC = ACC;
     }
@@ -436,7 +433,7 @@ public class SharkMachine {
             case 99:
                 // Notifies the OS that the CPU has halted
                 raiseInterrupt(InterruptType.HALT);
-                dumpState();
+                CSIAR = 0;
                 break;
 
         }
@@ -452,19 +449,4 @@ public class SharkMachine {
             }
         }
     }
-    
-    private void dumpState() {
-        System.out.println("ACC: " + ACC);
-        System.out.println("PSIAR: " + PSIAR);
-        System.out.println("SAR: " + SAR);
-        System.out.println("SDR: " + SDR);
-        System.out.println("TMPR: " + TMPR);
-        System.out.println("IR: " + IR);
-        System.out.println("MIR: " + MIR);
-        System.out.println("CSIAR: " + CSIAR); 
-        System.out.println("End of Job");
-        //TODO: Dump the memory
-        System.out.println("---------------------------------------");
-    }
-
 }
