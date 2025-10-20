@@ -390,6 +390,27 @@ public class SharkMachine {
                 break;
 
 
+            // LOAD IMMEDIATE (LDI, Opcode 70)
+            case 70:
+                ACC = PSIAR + 1;
+                CSIAR = 71;
+                break;
+
+            case 71:
+                PSIAR = ACC;
+                CSIAR = 72;
+                break;
+
+            case 72:
+                ACC = SDR;
+                CSIAR = 73;
+                break;
+
+            case 73:
+                CSIAR = 0;
+                break;
+
+
             // YIELD (Name YLD, Opcode 98)
             case 98:
                 ACC = PSIAR + 1;
