@@ -29,6 +29,8 @@ public class SharkOS implements InterruptHandler {
         pcb.TMPR = cpu.getTMPR();
         pcb.IR = cpu.getIR();
         pcb.CSIAR = cpu.getCSIAR();
+        pcb.nextOpcode = cpu.getNextOpcode();
+        pcb.nextOperand = cpu.getNextOperand();
 
     }
 
@@ -43,6 +45,8 @@ public class SharkOS implements InterruptHandler {
         cpu.setIR(pcb.IR);
         cpu.setCSIAR(pcb.CSIAR);
         pcb.state = ProcessState.RUNNING;
+        cpu.setNextOpcode( pcb.nextOpcode );
+        cpu.setNextOperand( pcb.nextOperand );
 
     }
 
@@ -97,6 +101,7 @@ public class SharkOS implements InterruptHandler {
             case FAULT:
                 if (program != null) {
                     program.state = ProcessState.TERMINATED;
+                    program = null;
                 }
                 runNextJob();
                 break;
@@ -107,7 +112,7 @@ public class SharkOS implements InterruptHandler {
 
     // Check if there is work to be done
     public boolean hasWork() {
-        return (program != null && program.state != ProcessState.TERMINATED) || !readyQueue.isEmpty();
+        return program != null || !readyQueue.isEmpty();
     }
 
 }

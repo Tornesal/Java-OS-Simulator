@@ -6,7 +6,6 @@ import OS.Parser;
 import java.util.ArrayList;
 
 public class Main {
-    // Helper method to load assembled code into memory
     public static void loadProgram(int[] memory, ArrayList<Integer> code, int baseAddress) {
         for (int i = 0; i < code.size(); i++) {
             memory[baseAddress + i] = code.get(i);
@@ -18,40 +17,26 @@ public class Main {
         SharkMachine cpu = new SharkMachine();
         SharkOS os = new SharkOS();
         Parser parser = new Parser();
-
-        // --- 2. Link OS and CPU Explicitly (CRITICAL STEP) ---
-        // This ensures the OS's interrupt handler and the main CPU are the same object.
-        // The lambda passes the interrupting machine directly to the OS handler.
         cpu.setInterruptHandler((type, machine) -> os.handleInterrupt(type, machine));
 
-        // --- 3. Load Program(s) ---
+        // --- 2. Load ALL Programs ---
         System.out.println("Loading programs...");
-        ArrayList<Integer> prog1Code = parser.parseFile("programs/SharkOSprog1.txt");
 
-        if (!prog1Code.isEmpty()) {
-            int baseAddress1 = 300;
-            loadProgram(cpu.getMemory(), prog1Code, baseAddress1);
+        // Program 1: Summation
+        loadAndCreateJob(cpu, os, parser, "programs/sharkosprog1.txt", 300, 1);
 
-            PCB job1 = new PCB(1);
-            job1.PSIAR = baseAddress1;
-            os.addJob(job1);
-            System.out.println("Program 1 loaded successfully.");
-        } else {
-            System.err.println("FATAL: Could not load Program 1. Exiting.");
-            return;
-        }
+        // Program 2: Decrement to Zero
+        loadAndCreateJob(cpu, os, parser, "programs/sharkosprog2.txt", 400, 2);
 
-        // --- ADD MORE PROGRAMS HERE LATER ---
+        // Program 3: Increment by 30
+        loadAndCreateJob(cpu, os, parser, "programs/sharkosprog3.txt", 500, 3);
 
         System.out.println("---------------------------------------");
 
-        // --- 4. Start Simulation ---
-        System.out.println("Starting SharkOS...");
-        // Tell the OS which CPU to start. This gives the OS its own reference
-        // to the main CPU for proactive tasks like starting the first job.
+        // --- 3. Start Simulation ---
+        System.out.println("Starting SharkOS multitasking simulation...");
         os.start(cpu);
 
-        // Main simulation loop
         while (os.hasWork()) {
             cpu.microStep();
         }
@@ -59,13 +44,24 @@ public class Main {
         System.out.println("---------------------------------------");
         System.out.println("All jobs completed.");
 
-        // --- 5. Verify Results ---
-        int finalResult = cpu.getMemory()[103];
-        System.out.println("Result of Program 1 at mem[103]: " + finalResult);
-        if (finalResult == 150) {
-            System.out.println("Verification SUCCESSFUL!");
+        // --- 4. Verify Results ---
+        System.out.println("\n--- Final Memory State Verification ---");
+        System.out.println("Summation Result at mem[103]: " + cpu.getMemory()[103] + " (Expected: 150)");
+        System.out.println("Decrement Result at mem[250]: " + cpu.getMemory()[250] + " (Expected: 0)");
+        System.out.println("Increment Result at mem[260]: " + cpu.getMemory()[260] + " (Expected: 30)");
+    }
+
+    // Helper method to reduce code duplication
+    public static void loadAndCreateJob(SharkMachine cpu, SharkOS os, Parser parser, String fileName, int baseAddress, int pid) {
+        ArrayList<Integer> code = parser.parseFile(fileName);
+        if (!code.isEmpty()) {
+            loadProgram(cpu.getMemory(), code, baseAddress);
+            PCB job = new PCB(pid);
+            job.PSIAR = baseAddress;
+            os.addJob(job);
+            System.out.println("Job PID " + pid + " (" + fileName + ") loaded at address " + baseAddress);
         } else {
-            System.out.println("Verification FAILED! Expected 150.");
+            System.err.println("Failed to load program: " + fileName);
         }
     }
 }

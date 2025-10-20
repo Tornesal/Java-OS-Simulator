@@ -1,0 +1,12 @@
+# Decrements memory[250] from 50 down to 0.
+
+LDI 50
+STR 250
+LDI 1
+STR 251
+LDA 250
+CBR 409
+SUB 251
+STR 250
+BRH 404
+HLT

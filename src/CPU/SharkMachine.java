@@ -59,6 +59,12 @@ public class SharkMachine {
     public int getCSIAR() {
         return CSIAR;
     }
+    public int getNextOpcode() {
+        return nextOpcode;
+    }
+    public int getNextOperand() {
+        return nextOperand;
+    }
 
     public void setMemory(int[] memory) {
         this.memory = memory;
@@ -86,6 +92,12 @@ public class SharkMachine {
     }
     public void setCSIAR(int CSIAR) {
         this.CSIAR = CSIAR;
+    }
+    public void setNextOpcode(int nextOpcode) {
+        this.nextOpcode = nextOpcode;
+    }
+    public void setNextOperand(int nextOperand) {
+        this.nextOperand = nextOperand;
     }
 
     public void setInterruptHandler(InterruptHandler handler) {

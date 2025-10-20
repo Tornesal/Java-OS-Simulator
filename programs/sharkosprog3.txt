@@ -1,0 +1,19 @@
+# Increments memory[260] by 2, fifteen times, for a final result of 30.
+
+LDI 0
+STR 260
+LDI 2
+STR 600
+LDI 15
+STR 601
+LDI 1
+STR 602
+LDA 260
+ADD 600
+STR 260
+LDA 601
+SUB 602
+STR 601
+CBR 516
+BRH 508
+HLT

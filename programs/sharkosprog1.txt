@@ -1,4 +1,5 @@
-# This program adds 40, 50, and 60
+# Adds 40, 50, and 60, storing the result in memory[103].
+
 LDI 40
 STR 100
 LDI 50
@@ -10,4 +11,4 @@ ADD 100
 ADD 101
 ADD 102
 STR 103
-HLT 0
+HLT
