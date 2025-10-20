@@ -1,7 +1,5 @@
 package OS;
 
-import CPU.SharkMachine;
-
 public class PCB {
 
     public final int pid;
