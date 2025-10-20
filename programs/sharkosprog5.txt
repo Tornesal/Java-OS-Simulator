@@ -1,0 +1,11 @@
+# Decrements M[50], data in 50-51. Code at 500.
+LDI 50
+STR 50
+LDI 1
+STR 51
+LDA 50
+CBR 509
+SUB 51
+STR 50
+BRH 504
+HLT

@@ -1,19 +1,18 @@
-# Increments memory[260] by 2, fifteen times, for a final result of 30.
-
+# Increments M[30], data in 30-33. Code at 300.
 LDI 0
-STR 260
-LDI 2
-STR 600
+STR 30
 LDI 15
-STR 601
+STR 31
+LDI 2
+STR 32
 LDI 1
-STR 602
-LDA 260
-ADD 600
-STR 260
-LDA 601
-SUB 602
-STR 601
-CBR 516
-BRH 508
+STR 33
+LDA 30
+ADD 32
+STR 30
+LDA 31
+SUB 33
+STR 31
+CBR 316
+BRH 308
 HLT

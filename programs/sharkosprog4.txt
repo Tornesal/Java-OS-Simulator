@@ -1,25 +1,13 @@
-# Increments value at address 260 by 2, 15 times. Result is 30.
-
-# --- Data Setup ---
+# Adds numbers, data in 40-43. Code at 400.
+LDI 40
+STR 40
+LDI 50
+STR 41
+LDI 60
+STR 42
 LDI 0
-STR 260
-LDI 15
-STR 261
-LDI 2
-STR 262
-LDI 1
-STR 263
-
-# --- Loop Start (line 8, addr 508) ---
-LDA 261
-CBR 518
-LDA 260
-ADD 262
-STR 260
-LDA 261
-SUB 263
-STR 261
-BRH 508
-
-# --- Halt (line 18, addr 518) ---
-HLT 0
+ADD 40
+ADD 41
+ADD 42
+STR 43
+HLT

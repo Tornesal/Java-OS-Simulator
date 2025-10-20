@@ -1,12 +1,11 @@
-# Decrements memory[250] from 50 down to 0.
-
+# Decrements M[20], data in 20-21. Code at 200.
 LDI 50
-STR 250
+STR 20
 LDI 1
-STR 251
-LDA 250
-CBR 409
-SUB 251
-STR 250
-BRH 404
+STR 21
+LDA 20
+CBR 209
+SUB 21
+STR 20
+BRH 204
 HLT

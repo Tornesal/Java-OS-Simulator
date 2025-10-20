@@ -1,14 +1,13 @@
-# Adds 40, 50, and 60, storing the result in memory[103].
-
+# Adds numbers, data in 10-13. Code at 100.
 LDI 40
-STR 100
+STR 10
 LDI 50
-STR 101
+STR 11
 LDI 60
-STR 102
+STR 12
 LDI 0
-ADD 100
-ADD 101
-ADD 102
-STR 103
+ADD 10
+ADD 11
+ADD 12
+STR 13
 HLT
