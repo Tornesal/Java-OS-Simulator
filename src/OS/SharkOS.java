@@ -10,11 +10,9 @@ public class SharkOS implements InterruptHandler {
 
     private SharkMachine cpu;
 
-    public void start(SharkMachine cpu, PCB pcb) {
+    public void start(SharkMachine cpu) {
 
         this.cpu = cpu;
-
-        addJob(pcb);
 
         // Load the first job into the CPU
         runNextJob();
@@ -31,7 +29,6 @@ public class SharkOS implements InterruptHandler {
         pcb.TMPR = cpu.getTMPR();
         pcb.IR = cpu.getIR();
         pcb.CSIAR = cpu.getCSIAR();
-        pcb.halted = cpu.isHalted();
 
     }
 
@@ -43,9 +40,9 @@ public class SharkOS implements InterruptHandler {
         cpu.setSAR(pcb.SAR);
         cpu.setSDR(pcb.SDR);
         cpu.setTMPR(pcb.TMPR);
-        cpu.setIR(pcb.IR);
-        cpu.setCSIAR(pcb.CSIAR);
-        cpu.setHalted(false);
+        // Start with a fresh fetch
+        //cpu.setIR(pcb.IR);
+        cpu.setCSIAR(0);
         pcb.state = ProcessState.RUNNING;
 
     }
@@ -95,23 +92,15 @@ public class SharkOS implements InterruptHandler {
             case TIMER:
 
             case YIELD:
-                if (running != null && running.state == ProcessState.TERMINATED) {
-
-                    running.state = ProcessState.READY;
-                    readyQueue.addLast(running);
-
-                }
-
+                running.state = ProcessState.READY;
+                readyQueue.addLast(running);
                 runNextJob();
                 break;
 
             case HALT:
-                if (running != null) running.state = ProcessState.TERMINATED;
-                runNextJob();
-                break;
 
             case FAULT:
-                if (running != null) running.state = ProcessState.TERMINATED; // or ERROR
+                running.state = ProcessState.TERMINATED;
                 runNextJob();
                 break;
 

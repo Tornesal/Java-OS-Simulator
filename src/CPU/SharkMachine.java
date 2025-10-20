@@ -17,11 +17,12 @@ public class SharkMachine {
     private int MIR;
     private int CSIAR;
 
-    private boolean halted = false;
-
     // timer for timer interrupts
     private int timer = 0;
-    private final int QUANTUM = 100;
+    private final int QUANTUM = 20;
+
+    // Prevents timer from firing on the same cycle as another interrupt
+    private boolean interruptFired = false;
 
     private InterruptHandler interruptHandler;
 
@@ -58,9 +59,6 @@ public class SharkMachine {
     public int getCSIAR() {
         return CSIAR;
     }
-    public boolean isHalted() {
-        return halted;
-    }
 
     public void setMemory(int[] memory) {
         this.memory = memory;
@@ -89,9 +87,6 @@ public class SharkMachine {
     public void setCSIAR(int CSIAR) {
         this.CSIAR = CSIAR;
     }
-    public void setHalted(boolean halted) {
-        this.halted = halted;
-    }
 
     public void setInterruptHandler(InterruptHandler handler) {
         interruptHandler = handler;
@@ -99,7 +94,8 @@ public class SharkMachine {
 
     // Raises an interrupt for the OS to handle.
     private void raiseInterrupt(InterruptType type) {
-        if (interruptHandler != null && !halted) {
+        if (interruptHandler != null) {
+            interruptFired = true;
             interruptHandler.handleInterrupt(type, this);
         }
     }
@@ -114,9 +110,9 @@ public class SharkMachine {
     }
 
     public void microStep() {
-        if (halted) {
-            return;
-        }
+
+        // Protection against double interrupts
+        interruptFired = false;
 
         MIR = CSIAR;
 
@@ -362,6 +358,7 @@ public class SharkMachine {
 
             case 62:
                 PSIAR = SDR;
+                CSIAR = 63;
                 break;
 
             case 63:
@@ -395,7 +392,10 @@ public class SharkMachine {
 
             // YIELD (Name YLD, Opcode 98)
             case 98:
+                ACC = PSIAR + 1;
+                PSIAR = ACC;
                 raiseInterrupt(InterruptType.YIELD);
+                CSIAR = 0;
                 break;
 
 
@@ -403,20 +403,21 @@ public class SharkMachine {
             case 99:
                 // Notifies the OS that the CPU has halted
                 raiseInterrupt(InterruptType.HALT);
-                halted = true;
                 dumpState();
                 break;
 
         }
 
         // Advance timer by one tick for timer interrupt.
-        timer++;
+        if (!interruptFired) {
 
-        if (timer >= QUANTUM) {
-            timer = 0;
-            raiseInterrupt(InterruptType.TIMER);
+            timer++;
+
+            if (timer >= QUANTUM) {
+                timer = 0;
+                raiseInterrupt(InterruptType.TIMER);
+            }
         }
-
     }
     
     private void dumpState() {
@@ -428,7 +429,6 @@ public class SharkMachine {
         System.out.println("IR: " + IR);
         System.out.println("MIR: " + MIR);
         System.out.println("CSIAR: " + CSIAR); 
-        System.out.println("halted: " + halted);
         System.out.println("End of Job");
         //TODO: Dump the memory
         System.out.println("---------------------------------------");
