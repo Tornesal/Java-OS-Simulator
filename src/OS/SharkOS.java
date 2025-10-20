@@ -6,7 +6,7 @@ public class SharkOS implements InterruptHandler {
 
     // Queue for PCBs that are being processed
     private final java.util.ArrayDeque<PCB> readyQueue = new java.util.ArrayDeque<>();
-    private PCB running;
+    private PCB program;
 
     private SharkMachine cpu;
 
@@ -32,7 +32,7 @@ public class SharkOS implements InterruptHandler {
 
     }
 
-    // Restores the CPU state from the PCB
+    // Restores the CPU state from the PCB EXACTLY as it was before the interrupt
     private void restoreContext(SharkMachine cpu, PCB pcb) {
 
         cpu.setACC(pcb.ACC);
@@ -40,9 +40,8 @@ public class SharkOS implements InterruptHandler {
         cpu.setSAR(pcb.SAR);
         cpu.setSDR(pcb.SDR);
         cpu.setTMPR(pcb.TMPR);
-        // Start with a fresh fetch
-        //cpu.setIR(pcb.IR);
-        cpu.setCSIAR(0);
+        cpu.setIR(pcb.IR);
+        cpu.setCSIAR(pcb.CSIAR);
         pcb.state = ProcessState.RUNNING;
 
     }
@@ -58,22 +57,16 @@ public class SharkOS implements InterruptHandler {
     // Run the next job in the ready queue
     public void runNextJob() {
 
-        running = null;
-
-        while (!readyQueue.isEmpty()) {
-
-            // Pull the first job off the queue
-            PCB next = readyQueue.pollFirst();
-
-            // Stop after the job is not terminated and after running a single job
-            if (next.state != ProcessState.TERMINATED) {
-
-                running = next;
-                restoreContext(cpu, running);
-                return;
-
-            }
+        // If there are no jobs to run, return
+        if (readyQueue.isEmpty()) {
+            program = null;
+            return;
         }
+
+        // Pull the first available job off the queue
+        program = readyQueue.pollFirst();
+
+        restoreContext(this.cpu, program);
     }
 
     // Interrupt handler for interrupts from the CPU
@@ -81,9 +74,9 @@ public class SharkOS implements InterruptHandler {
     public void handleInterrupt(InterruptType type, SharkMachine cpu) {
 
         // Get the PCB of the running process
-        if (running != null) {
+        if (program != null) {
 
-            saveContext(cpu, running);
+            saveContext(cpu, program);
 
         }
 
@@ -92,15 +85,19 @@ public class SharkOS implements InterruptHandler {
             case TIMER:
 
             case YIELD:
-                running.state = ProcessState.READY;
-                readyQueue.addLast(running);
+                if (program != null) {
+                    program.state = ProcessState.READY;
+                    readyQueue.addLast(program);
+                }
                 runNextJob();
                 break;
 
             case HALT:
 
             case FAULT:
-                running.state = ProcessState.TERMINATED;
+                if (program != null) {
+                    program.state = ProcessState.TERMINATED;
+                }
                 runNextJob();
                 break;
 
@@ -110,7 +107,7 @@ public class SharkOS implements InterruptHandler {
 
     // Check if there is work to be done
     public boolean hasWork() {
-        return (running != null && running.state != ProcessState.TERMINATED) || !readyQueue.isEmpty();
+        return (program != null && program.state != ProcessState.TERMINATED) || !readyQueue.isEmpty();
     }
 
 }
