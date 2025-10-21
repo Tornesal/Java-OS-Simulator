@@ -1,16 +1,19 @@
 package OS;
 
 import CPU.*;
+import OS.Parser;
+import OS.JobDetails;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SharkOS implements InterruptHandler {
 
     // Queue for PCBs that are being processed
     private final java.util.ArrayDeque<PCB> readyQueue = new java.util.ArrayDeque<>();
     private PCB program;
-
     private SharkMachine cpu;
 
     public void start(SharkMachine cpu) {
