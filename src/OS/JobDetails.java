@@ -8,8 +8,12 @@ public class JobDetails {
     public int baseAddress;
     public int pid;
 
-    public JobDetails(String f, int a, int b, int p) {
-        fileName = f; arrivalTime = a; baseAddress = b; pid = p;
-    }
+    public JobDetails(String fileName, int arrivalTime, int baseAddress, int pid) {
 
+        this.fileName = fileName;
+        this.arrivalTime = arrivalTime;
+        this.baseAddress = baseAddress;
+        this.pid = pid;
+
+    }
 }

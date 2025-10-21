@@ -52,7 +52,7 @@ public class Main {
 
                 // Once the job's time arrives, load the program and add it to the ready queue
                 if (systemTime >= jobs.arrivalTime) {
-                    System.out.println("\n----- System Time: " + systemTime + " -> Job PID " + jobs.pid + " has arrived! -----");
+                    System.out.println("\n----- System Time: " + systemTime + " -> Job PID " + jobs.pid + ", Job Name: " + "\"" + jobs.fileName + "\"" + " has been added to the OS queue -----");
 
                     ArrayList<Integer> code = parser.parseFile(jobs.fileName);
 
@@ -89,7 +89,7 @@ public class Main {
 
         }
 
-        System.out.println("\n---------------------------------------");
+        System.out.println("\n---------------------------------------\n");
         System.out.println("All jobs completed.");
 
         // --- 5. Verify All 6 Results ---
