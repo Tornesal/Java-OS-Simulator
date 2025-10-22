@@ -1,12 +1,5 @@
-import CPU.SharkMachine;
 import OS.SharkOS;
-import OS.PCB;
-import OS.Parser;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import OS.JobDetails;
 
 public class Main {
