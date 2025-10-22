@@ -2,27 +2,81 @@ package OS;
 
 import CPU.*;
 import OS.Parser;
-import OS.JobDetails;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SharkOS implements InterruptHandler {
 
     // Queue for PCBs that are being processed
     private final java.util.ArrayDeque<PCB> readyQueue = new java.util.ArrayDeque<>();
     private PCB program;
-    private SharkMachine cpu;
+    private final SharkMachine cpu;
+    private final Parser parser;
 
-    public void start(SharkMachine cpu) {
 
-        this.cpu = cpu;
+    public SharkOS() {
 
-        // Load the first job into the CPU
-        runNextJob();
+        // Link CPU, Parser, and InterruptHandler together to OS
+        this.cpu = new SharkMachine();
+        this.parser = new Parser();
+        this.cpu.setInterruptHandler(this);
 
+    }
+
+    public void start(ArrayList<JobDetails> jobs) {
+
+        System.out.println("----- Starting SharkOS Simulation -----");
+
+        // Set up our logs directory now and system time
+        // Create the logs directory if it doesn't exist
+        java.io.File logDir = new java.io.File("logs");
+        if (!logDir.exists()) {
+            logDir.mkdirs();
+        }
+
+        long systemTime = 0;
+
+        // Main loop for the simulation. Runs until there are no jobs left to run.
+        while (hasWork() || !jobs.isEmpty()) {
+
+            // Iterator for the jobs list
+            var iterator = jobs.iterator();
+
+            while (iterator.hasNext()) {
+
+                JobDetails job = iterator.next();
+
+                // If the job's time arrives, load the program and add it to the ready queue
+                if (systemTime >= job.arrivalTime) {
+
+                    System.out.println("\n----- System Time: " + systemTime + " -> Job PID " + job.pid + ", Job Name: " + "\"" + job.fileName + "\"" + " has been added to the OS queue -----");
+
+                    addJob(job.fileName, job.baseAddress, job.pid);
+                    iterator.remove();
+
+                }
+            }
+
+            // run CPU one cycle
+            if (program != null) {
+                cpu.microStep();
+            }
+
+            systemTime++;
+        }
+
+        // Final printout to show results of simulation
+        System.out.println("\n---------------------------------------\n");
+        System.out.println("All jobs completed.");
+        System.out.println("\n--- Final Memory State Verification ---");
+        System.out.println("Job 1 Result at mem[13]: " + cpu.getMemory()[13] + " (Expected: 150)");
+        System.out.println("Job 2 Result at mem[20]: " + cpu.getMemory()[20] + " (Expected: 0)");
+        System.out.println("Job 3 Result at mem[30]: " + cpu.getMemory()[30] + " (Expected: 30)");
+        System.out.println("Job 4 Result at mem[43]: " + cpu.getMemory()[43] + " (Expected: 150)");
+        System.out.println("Job 5 Result at mem[50]: " + cpu.getMemory()[50] + " (Expected: 0)");
+        System.out.println("Job 6 Result at mem[60]: " + cpu.getMemory()[60] + " (Expected: 30)");
     }
 
     // Saves the CPU state into the PCB
@@ -57,11 +111,27 @@ public class SharkOS implements InterruptHandler {
     }
 
     // Add a new job to the ready queue
-    public void addJob(PCB pcb) {
+    public void addJob(String fileName, int baseAddress, int pid) {
 
-        pcb.state = ProcessState.READY;
-        readyQueue.addLast(pcb);
+        ArrayList<Integer> code = parser.parseFile(fileName);
 
+        // If the file was parsed successfully, add it to the ready queue
+        if (!code.isEmpty()) {
+
+            // Load the program into memory
+            int[] memory = cpu.getMemory();
+            for (int i = 0; i < code.size(); i++) {
+                memory[baseAddress + i] = code.get(i);
+            }
+
+            PCB job = new PCB(pid);
+            job.PSIAR = baseAddress;
+            readyQueue.addLast(job);
+
+            if (program == null){
+                runNextJob();
+            }
+        }
     }
 
     // Run the next job in the ready queue
@@ -124,12 +194,6 @@ public class SharkOS implements InterruptHandler {
         if (job == null) return;
 
         String logFileName = "logs/job_" + job.pid + "_dump.log";
-
-        // Create the logs directory if it doesn't exist
-        java.io.File logDir = new java.io.File("logs");
-        if (!logDir.exists()) {
-            logDir.mkdirs();
-        }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFileName))) {
             writer.write("----- DUMP STATE on HALT for Job PID: " + job.pid + " -----\n");
