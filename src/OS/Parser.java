@@ -3,7 +3,6 @@ package OS;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 // This class is used to convert the .txt files that contain instructions into the opcodes that the CPU can understand.
 public class Parser {
