@@ -6,7 +6,6 @@ public class PCB {
 
     // CPU context to be saved
     public int ACC, PSIAR, SAR, SDR, TMPR, IR, MIR, CSIAR, nextOpcode, nextOperand;
-    public boolean halted;
     public ProcessState state = ProcessState.NEW;
 
     public PCB(int pid) {
