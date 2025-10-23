@@ -11,7 +11,7 @@ SharkOS is a complete simulation of a computer system, featuring a custom-built 
 
 The simulation is capable of loading multiple custom-written assembly programs from text files, managing them as concurrent processes, and executing them using a round-robin scheduling algorithm.
 
-**[View the Full Design Document Here](./docs/Design_Document.pdf)**
+**[View the Full Design Document Here](./docs/Design_Document.docx)**
 
 ## Key Features
 
