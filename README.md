@@ -1,6 +1,6 @@
 # SharkOS: A Simulated CPU and Multitasking Operating System in Java
 
-### ⚠️ ACADEMIC INTEGRITY NOTICE ⚠️
+###  ACADEMIC INTEGRITY NOTICE 
 **This repository contains my solution for a university programming assignment. It is intended for portfolio and demonstration purposes only.** If you are a student, please be aware that submitting any part of this code as your own work is a serious violation of academic integrity.
 
 ---
